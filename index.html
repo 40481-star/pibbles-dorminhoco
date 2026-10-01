@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>O Festival do Pibble Dorminhoco: Defenda a Soneca!</title>
+  <meta name="description" content="Um jogo aconchegante onde você ajuda buldogues franceses fofinhos a caírem no sono mais profundo!">
+  
+  <!-- Google Fonts: Fredoka (fofa e expressiva) & Quicksand (aconchegante e limpa) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       1. VARIÁVEIS DE DESIGN E TEMA ACONCHEGANTE (PASTEL COZY)
+       ========================================================================== */
+    :root {
+      --bg-cream: #FDFBF7;
+      --bg-cream-darker: #F5EFE6;
+      --sofa-tan: #EFE4D6;
+      --sofa-border: #DDC8B4;
+      --cushion-empty: #F9F5EF;
+      --cushion-border: #E8D8C8;
+      
+      --rose-primary: #E88D9C;
+      --rose-light: #FCE8EB;
+      --rose-dark: #C96677;
+      
+      --caramel: #8C6754;
+      --caramel-light: #BFA493;
+      --caramel-dark: #5C3D2E;
+      
+      --snooze-purple: #9683B5;
+      --snooze-light: #ECE7F5;
+      
+      --gold-star: #F7B731;
+      --success-green: #7BC676;
+      
+      --card-shadow: 0 10px 25px rgba(92, 61, 46, 0.12), 0 3px 8px rgba(0, 0, 0, 0.04);
+      --cushion-shadow: inset 0 4px 10px rgba(92, 61, 46, 0.08), 0 6px 16px rgba(92, 61, 46, 0.06);
+      --font-display: 'Fredoka', cursive, sans-serif;
+      --font-body: 'Quicksand', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      background-image: 
+        radial-gradient(#EFE4D6 1.5px, transparent 1.5px),
+        radial-gradient(#E8D8C8 1px, var(--bg-cream) 1px);
+      background-size: 36px 36px;
+      background-position: 0 0, 18px 18px;
+      font-family: var(--font-body);
+      color: var(--caramel-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 12px;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================================================
+       2. ESTRUTURA PRINCIPAL (LAYOUT DE TELA ÚNICA)
+       ========================================================================== */
+    .game-container {
+      width: 100%;
+      max-width: 560px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      position: relative;
+      margin: auto;
+    }
+
+    /* TOPO: Cabeçalho & Placar */
+    header {
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--rose-light);
+      color: var(--rose-dark);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 6px rgba(232, 141, 156, 0.2);
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--caramel-dark);
+      line-height: 1.2;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--caramel);
+      font-weight: 600;
+    }
+
+    /* Barra de Estatísticas (Scoreboard) */
+    .stats-board {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: 2px solid var(--sofa-border);
+      box-shadow: var(--card-shadow);
+      align-items: center;
+    }
+
+    .stat-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 6px;
+      border-radius: 12px;
+      background: var(--bg-cream-darker);
+      border: 1px solid var(--cushion-border);
+      transition: transform 0.2s ease;
+    }
+
+    .stat-pill.highlight {
+      background: var(--rose-light);
+      border-color: var(--rose-primary);
+      animation: popPill 0.3s ease;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--caramel);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--caramel-dark);
+      line-height: 1.1;
+    }
+
+    #stat-timer.danger {
+      color: #D94A58;
+      animation: pulseDanger 0.8s infinite alternate;
+    }
+
+    .btn-icon {
+      background: var(--rose-light);
+      border: 2px solid var(--rose-primary);
+      color: var(--rose-dark);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(232, 141, 156, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .btn-icon:hover {
+      transform: scale(1.08);
+      background: var(--rose-primary);
+      color: white;
+    }
+
+    .btn-icon:active {
+      transform: scale(0.94);
+    }
+
+    /* ==========================================================================
+       3. GRADE 3X3: O SOFÁ / CAMINHA DOS PIBBLES
+       ========================================================================== */
+    .sofa-arena {
+      width: 100%;
+      background: var(--sofa-tan);
+      border: 6px solid var(--sofa-border);
+      border-radius: 28px;
+      padding: 14px;
+      box-shadow: 0 16px 36px rgba(92, 61, 46, 0.16), inset 0 2px 6px rgba(255, 255, 255, 0.6);
+      position: relative;
+    }
+
+    /* Detalhe de estofamento / costura do sofá */
+    .sofa-arena::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 2px dashed rgba(140, 103, 84, 0.25);
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
+    .bed-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+    }
+
+    /* Cada vaga/caminha na grade */
+    .cushion-slot {
+      background: var(--cushion-empty);
+      border-radius: 22px;
+      border: 3px solid var(--cushion-border);
+      box-shadow: var(--cushion-shadow);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      cursor: default;
+      transition: all 0.25s ease;
+    }
+
+    /* Marca de patinha na caminha vazia */
+    .cushion-slot::after {
+      content: "🐾";
+      font-size: 1.8rem;
+      opacity: 0.18;
+      filter: grayscale(1);
+      transition: opacity 0.3s ease;
+    }
+
+    .cushion-slot.active::after {
+      opacity: 0;
+    }
+
+    /* ==========================================================================
+       4. ESTILO ADESIVO POLAROID DO PIBBLE
+       ========================================================================== */
+    .pibble-card {
+      position: absolute;
+      inset: -4px;
+      background: #FFFFFF;
+      border-radius: 18px;
+      padding: 6px 6px 10px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(220, 200, 180, 0.4);
+      cursor: pointer;
+      z-index: 10;
+      animation: popIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      touch-action: manipulation;
+    }
+
+    /* Efeito de Washi Tape / Fita Adesiva na Polaroid */
+    .pibble-card::before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      width: 44px;
+      height: 14px;
+      background: rgba(232, 141, 156, 0.65);
+      border-radius: 3px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      z-index: 15;
+      transform: rotate(-3deg);
+    }
+
+    /* Foto Real do Cachorrinho */
+    .pibble-photo-wrapper {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      background: #FAECEB;
+    }
+
+    .pibble-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s ease, filter 0.35s ease;
+    }
+
+    /* Anel de Tempo Regressivo na Polaroid */
+    .timer-ring {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      transform: rotate(-90deg);
+    }
+
+    .timer-ring circle {
+      fill: transparent;
+      stroke: var(--rose-primary);
+      stroke-width: 6;
+      stroke-dasharray: 283;
+      stroke-dashoffset: 0;
+      stroke-linecap: round;
+      opacity: 0.85;
+      transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
+    }
+
+    /* Etiqueta / Tag de Status da Polaroid */
+    .pibble-badge {
+      margin-top: 4px;
+      width: 100%;
+      text-align: center;
+      font-size: 0.68rem;
+      font-weight: 700;
+      font-family: var(--font-display);
+      padding: 2px 4px;
+      border-radius: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.3s ease;
+    }
+
+    /* Estado: Acordado / Bagunçando */
+    .pibble-card.awake .pibble-badge {
+      background: #FEE8D6;
+      color: #C05A18;
+    }
+
+    /* Estado: Dormindo com Sucesso */
+    .pibble-card.sleeping {
+      pointer-events: none;
+      box-shadow: 0 8px 25px rgba(150, 131, 181, 0.35), 0 0 15px rgba(150, 131, 181, 0.4);
+      border-color: rgba(150, 131, 181, 0.5);
+      animation: sleepSway 1s ease-in-out infinite alternate;
+    }
+
+    .pibble-card.sleeping .pibble-badge {
+      background: var(--snooze-light);
+      color: var(--snooze-purple);
+    }
+
+    .pibble-card.sleeping .pibble-photo {
+      filter: saturate(0.9) brightness(0.95);
+    }
+
+    .pibble-card.sleeping::before {
+      background: rgba(150, 131, 181, 0.65);
+      transform: rotate(2deg);
+    }
+
+    /* Animação quando o Pibble foge (tempo esgotou) */
+    .pibble-card.escaped {
+      animation: escapePoof 0.4s ease-out forwards;
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       5. EFEITOS VISUAIS: "Zzz" FLUTUANTE E SCORE POPUP
+       ========================================================================== */
+    .floating-zzz {
+      position: absolute;
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: var(--snooze-purple);
+      text-shadow: 0 2px 8px rgba(255, 255, 255, 0.9);
+      pointer-events: none;
+      z-index: 40;
+      animation: floatZzzAnim 1.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    .score-popup {
+      position: absolute;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--rose-dark);
+      text-shadow: 0 2px 6px white, 0 1px 3px rgba(0,0,0,0.1);
+      pointer-events: none;
+      z-index: 45;
+      animation: scorePopupAnim 0.9s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+    }
+
+    /* ==========================================================================
+       6. RODAPÉ: BOTÕES E MENSAGEM DE STATUS
+       ========================================================================== */
+    footer {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .action-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: linear-gradient(135deg, #F39EA8, #E87A8E);
+      color: white;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(232, 122, 142, 0.38), inset 0 2px 2px rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 26px rgba(232, 122, 142, 0.45);
+    }
+
+    .btn-primary:active {
+      transform: translateY(2px) scale(0.97);
+    }
+
+    .status-banner {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--sofa-border);
+      border-radius: 14px;
+      padding: 8px 14px;
+      text-align: center;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--caramel);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(92, 61, 46, 0.05);
+      min-height: 38px;
+    }
+
+    .combo-badge {
+      background: var(--gold-star);
+      color: #634305;
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 6px;
+      display: none;
+      animation: popPill 0.3s ease;
+    }
+
+    /* ==========================================================================
+       7. TELA DE GAME OVER (MODAL ELEGANTE NA MESMA TELA)
+       ========================================================================== */
+    .game-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(92, 61, 46, 0.45);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    .game-modal-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .game-modal {
+      background: var(--bg-cream);
+      border: 4px solid var(--sofa-border);
+      border-radius: 28px;
+      max-width: 440px;
+      width: 100%;
+      padding: 28px 22px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+      text-align: center;
+      transform: scale(0.85);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .game-modal-overlay.visible .game-modal {
+      transform: scale(1);
+    }
+
+    .modal-icon-crown {
+      width: 72px;
+      height: 72px;
+      background: var(--rose-light);
+      border: 3px solid var(--rose-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: 0 6px 18px rgba(232, 141, 156, 0.35);
+      margin-top: -10px;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      color: var(--caramel-dark);
+      line-height: 1.2;
+    }
+
+    .modal-rank-badge {
+      display: inline-block;
+      background: var(--snooze-light);
+      color: var(--snooze-purple);
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(150, 131, 181, 0.3);
+    }
+
+    .modal-grid-results {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 4px 0;
+    }
+
+    .modal-card-stat {
+      background: white;
+      border: 1px solid var(--cushion-border);
+      border-radius: 16px;
+      padding: 10px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .modal-card-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--caramel);
+      text-transform: uppercase;
+    }
+
+    .modal-card-value {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--caramel-dark);
+      font-weight: 700;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--caramel);
+      border: 2px solid var(--cushion-border);
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: white;
+      color: var(--caramel-dark);
+      border-color: var(--caramel-light);
+    }
+
+    /* ==========================================================================
+       8. KEYFRAME ANIMATIONS
+       ========================================================================== */
+    @keyframes popIn {
+      0% {
+        transform: scale(0.3) rotate(-8deg);
+        opacity: 0;
+      }
+      70% {
+        transform: scale(1.08) rotate(3deg);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    @keyframes sleepSway {
+      0% {
+        transform: rotate(-1.5deg) translateY(0);
+      }
+      100% {
+        transform: rotate(1.5deg) translateY(-3px);
+      }
+    }
+
+    @keyframes escapePoof {
+      0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.15) rotate(8deg);
+      }
+      100% {
+        transform: scale(0.2) translateY(20px);
+        opacity: 0;
+      }
+    }
+
+    @keyframes floatZzzAnim {
+      0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.5);
+      }
+      20% {
+        opacity: 1;
+        transform: translate(-10px, -20px) scale(1);
+      }
+      60% {
+        opacity: 0.9;
+        transform: translate(12px, -50px) scale(1.25) rotate(10deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-6px, -85px) scale(1.5) rotate(-10deg);
+      }
+    }
+
+    @keyframes scorePopupAnim {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.5);
+      }
+      30% {
+        opacity: 1;
+        transform: translate(-50%, -20px) scale(1.2);
+      }
+      70% {
+        opacity: 1;
+        transform: translate(-50%, -38px) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -55px) scale(0.8);
+      }
+    }
+
+    @keyframes popPill {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes pulseDanger {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
+    }
+
+    /* Responsividade */
+    @media (max-width: 440px) {
+      h1 { font-size: 1.35rem; }
+      .stat-value { font-size: 1.15rem; }
+      .sofa-arena { padding: 10px; border-width: 4px; }
+      .bed-grid { gap: 8px; }
+      .pibble-card { padding: 4px 4px 8px 4px; }
+      .pibble-badge { font-size: 0.6rem; }
+      .btn-primary { font-size: 1.05rem; padding: 12px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    <!-- TOPO: Título e Placar de Pontos / Tempo -->
+    <header>
+      <div class="title-badge">
+        <span>🐾</span> Edição Cochilo da Tarde <span>💤</span>
+      </div>
+      <h1>O Festival do Pibble Dorminhoco</h1>
+      <p class="subtitle">Defenda a Soneca! Aconchegue os buldogues franceses</p>
+
+      <div class="stats-board">
+        <div class="stat-pill" id="pill-score">
+          <span class="stat-label">💤 Pontos Zzz</span>
+          <span class="stat-value" id="stat-score">0</span>
+        </div>
+        <div class="stat-pill" id="pill-timer">
+          <span class="stat-label">⏳ Tempo</span>
+          <span class="stat-value" id="stat-timer">30s</span>
+        </div>
+        <div class="stat-pill" id="pill-best">
+          <span class="stat-label">🏆 Recorde</span>
+          <span class="stat-value" id="stat-best">0</span>
+        </div>
+        <button class="btn-icon" id="btn-sound" title="Alternar Som" aria-label="Alternar Som">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CENTRO: Grade 3x3 no Sofá/Caminha Aconchegante -->
+    <main class="sofa-arena" aria-label="Sofá de Sonecas">
+      <div class="bed-grid" id="bed-grid">
+        <!-- 9 posições/caminhas geradas dinamicamente -->
+      </div>
+    </main>
+
+    <!-- RODAPÉ: Botão Iniciar e Mensagens de Status -->
+    <footer>
+      <div class="status-banner" id="status-banner">
+        <span id="status-text">Pronto para a soneca coletiva? Clique em Iniciar!</span>
+        <span class="combo-badge" id="combo-badge">Combo x2!</span>
+      </div>
+
+      <div class="action-controls">
+        <button class="btn-primary" id="btn-start">
+          <span id="btn-icon">▶</span>
+          <span id="btn-text">Iniciar Soneca!</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MODAL DE GAME OVER NA MESMA TELA -->
+  <div class="game-modal-overlay" id="game-modal-overlay" role="dialog" aria-modal="true">
+    <div class="game-modal">
+      <div class="modal-icon-crown" id="modal-trophy">👑</div>
+      <h2 class="modal-title">Hora do Soninho Geral!</h2>
+      <div class="modal-rank-badge" id="modal-rank">Mestre da Soneca Perfeita 🌸</div>
+
+      <div class="modal-grid-results">
+        <div class="modal-card-stat">
+          <span class="modal-card-label">Pontos Zzz</span>
+          <span class="modal-card-value" id="modal-final-score">0</span>
+        </div>
+        <div class="modal-card-stat">
+          <span class="modal-card-label">Sonecas Feitas</span>
+          <span class="modal-card-value" id="modal-snooze-count">0</span>
+        </div>
+        <div class="modal-card-stat">
+          <span class="modal-card-label">Maior Combo</span>
+          <span class="modal-card-value" id="modal-max-combo">x1</span>
+        </div>
+        <div class="modal-card-stat">
+          <span class="modal-card-label">Precisão</span>
+          <span class="modal-card-value" id="modal-accuracy">100%</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-primary" id="btn-restart">
+          <span>🔄</span> Jogar Novamente
+        </button>
+        <button class="btn-secondary" id="btn-share">
+          📋 Copiar Conquista
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       LÓGICA JAVASCRIPT: MECÂNICAS, ÁUDIO SINTETIZADO E ANIMAÇÕES
+       ========================================================================== -->
+  <script>
+    /* --------------------------------------------------------------------------
+       1. ELENCO DE BULFDOGUES FRANCESES (PIBBLES REAIS)
+       -------------------------------------------------------------------------- */
+    const PIBBLER_ROSTER = [
+      {
+        name: "Paçoca",
+        awakeMsg: "Quer o chinelo! 🩴",
+        sleepMsg: "Roncando baixinho... 💤",
+        awakeImg: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=400&h=400&q=80",
+        sleepImg: "https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?auto=format&fit=crop&w=400&h=400&q=80"
+      },
+      {
+        name: "Pipoca",
+        awakeMsg: "Ouviu petisco! 🍖",
+        sleepMsg: "Sonhando com bifinho 🥩",
+        awakeImg: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=400&h=400&q=80",
+        sleepImg: "https://images.unsplash.com/photo-1583512603866-910c8542ba1b?auto=format&fit=crop&w=400&h=400&q=80"
+      },
+      {
+        name: "Bisteca",
+        awakeMsg: "Modo zoomies! ⚡",
+        sleepMsg: "Desmaiou no sofá 🛋️",
+        awakeImg: "https://images.unsplash.com/photo-1583511655826-05700d52f4d9?auto=format&fit=crop&w=400&h=400&q=80",
+        sleepImg: "https://images.unsplash.com/photo-1541599540903-216a46ca1dc0?auto=format&fit=crop&w=400&h=400&q=80"
+      },
+      {
+        name: "Thorzinho",
+        awakeMsg: "Latindo pro vento! 💨",
+        sleepMsg: "Enroladinho na manta 🧸",
+        awakeImg: "https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?auto=format&fit=crop&w=400&h=400&q=80",
+        sleepImg: "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=400&h=400&q=80"
+      },
+      {
+        name: "Amora",
+        awakeMsg: "Pedindo carinho! 🐾",
+        sleepMsg: "Soneca profunda 🌙",
+        awakeImg: "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=400&h=400&q=80",
+        sleepImg: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=400&h=400&q=80"
+      },
+      {
+        name: "Biscoito",
+        awakeMsg: "Pulando alto! 🎾",
+        sleepMsg: "Cochilo dos anjos ☁️",
+        awakeImg: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=400&h=400&q=80",
+        sleepImg: "https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=400&h=400&q=80"
+      }
+    ];
+
+    // Pré-carregamento das imagens em segundo plano
+    function preloadImages() {
+      PIBBLER_ROSTER.forEach(p => {
+        const imgA = new Image();
+        imgA.src = p.awakeImg;
+        const imgS = new Image();
+        imgS.src = p.sleepImg;
+      });
+    }
+    preloadImages();
+
+    /* --------------------------------------------------------------------------
+       2. SISTEMA DE ÁUDIO SINTETIZADO (WEB AUDIO API - 100% AUTÔNOMO)
+       -------------------------------------------------------------------------- */
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+          audioCtx = new AudioContext();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playTone(freq, type = 'sine', duration = 0.2, gainStart = 0.15) {
+      if (!soundEnabled || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        
+        gain.gain.setValueAtTime(gainStart, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.warn('Audio error:', e);
+      }
+    }
+
+    const Sound = {
+      pop: () => {
+        playTone(380, 'sine', 0.1, 0.2);
+        setTimeout(() => playTone(540, 'triangle', 0.12, 0.15), 40);
+      },
+      snooze: () => {
+        // Acorde suave de canção de ninar (Mi - Sol# - Si)
+        const notes = [659.25, 830.61, 987.77, 1318.51];
+        notes.forEach((f, i) => {
+          setTimeout(() => playTone(f, 'sine', 0.45, 0.18), i * 65);
+        });
+      },
+      escape: () => {
+        // Sons suaves quando o cão foge
+        playTone(320, 'triangle', 0.18, 0.12);
+        setTimeout(() => playTone(240, 'triangle', 0.22, 0.1), 100);
+      },
+      gameOver: () => {
+        // Melodia de caixinha de música ao terminar
+        const melody = [523.25, 659.25, 783.99, 1046.50, 880.00, 783.99];
+        melody.forEach((f, i) => {
+          setTimeout(() => playTone(f, 'sine', 0.5, 0.2), i * 140);
+        });
+      }
+    };
+
+    /* --------------------------------------------------------------------------
+       3. ESTADO DO JOGO
+       -------------------------------------------------------------------------- */
+    const GAME_CONFIG = {
+      totalTime: 30,         // Segundos totais da rodada
+      spawnIntervalMin: 900, // Tempo mín entre surgimentos (ms)
+      spawnIntervalMax: 1300,// Tempo máx entre surgimentos (ms)
+      pibbleLifetime: 1200,  // Tempo que fica acordado até fugir (ms)
+      basePoints: 100
+    };
+
+    let gameState = {
+      isPlaying: false,
+      score: 0,
+      timeLeft: GAME_CONFIG.totalTime,
+      combo: 0,
+      maxCombo: 0,
+      totalSnoozed: 0,
+      totalSpawned: 0,
+      slots: Array(9).fill(null), // slot indices 0-8
+      timerInterval: null,
+      spawnTimeout: null,
+      bestScore: parseInt(localStorage.getItem('pibble_best_score') || '0', 10)
+    };
+
+    /* --------------------------------------------------------------------------
+       4. ELEMENTOS DO DOM
+       -------------------------------------------------------------------------- */
+    const dom = {
+      bedGrid: document.getElementById('bed-grid'),
+      score: document.getElementById('stat-score'),
+      timer: document.getElementById('stat-timer'),
+      best: document.getElementById('stat-best'),
+      btnSound: document.getElementById('btn-sound'),
+      soundIcon: document.getElementById('sound-icon'),
+      btnStart: document.getElementById('btn-start'),
+      btnText: document.getElementById('btn-text'),
+      btnIcon: document.getElementById('btn-icon'),
+      statusText: document.getElementById('status-text'),
+      comboBadge: document.getElementById('combo-badge'),
+      modalOverlay: document.getElementById('game-modal-overlay'),
+      modalTrophy: document.getElementById('modal-trophy'),
+      modalRank: document.getElementById('modal-rank'),
+      modalFinalScore: document.getElementById('modal-final-score'),
+      modalSnoozeCount: document.getElementById('modal-snooze-count'),
+      modalMaxCombo: document.getElementById('modal-max-combo'),
+      modalAccuracy: document.getElementById('modal-accuracy'),
+      btnRestart: document.getElementById('btn-restart'),
+      btnShare: document.getElementById('btn-share'),
+      pillScore: document.getElementById('pill-score')
+    };
+
+    // Renderizar recorde inicial
+    dom.best.textContent = gameState.bestScore;
+
+    /* --------------------------------------------------------------------------
+       5. CONSTRUÇÃO DA GRADE DE 9 CAMINHAS
+       -------------------------------------------------------------------------- */
+    function buildGrid() {
+      dom.bedGrid.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'cushion-slot';
+        slot.dataset.index = i;
+        slot.id = `slot-${i}`;
+        dom.bedGrid.appendChild(slot);
+      }
+    }
+    buildGrid();
+
+    /* --------------------------------------------------------------------------
+       6. GERENCIAMENTO DE SPAWN E PIBBLES
+       -------------------------------------------------------------------------- */
+    function scheduleNextSpawn() {
+      if (!gameState.isPlaying) return;
+      const delay = Math.floor(
+        Math.random() * (GAME_CONFIG.spawnIntervalMax - GAME_CONFIG.spawnIntervalMin) + 
+        GAME_CONFIG.spawnIntervalMin
+      );
+      gameState.spawnTimeout = setTimeout(() => {
+        spawnPibble();
+        scheduleNextSpawn();
+      }, delay);
+    }
+
+    function spawnPibble() {
+      if (!gameState.isPlaying) return;
+
+      // Encontrar slots vazios
+      const emptySlotIndices = [];
+      gameState.slots.forEach((val, idx) => {
+        if (val === null) emptySlotIndices.push(idx);
+      });
+
+      if (emptySlotIndices.length === 0) return;
+
+      // Escolher slot aleatório e pibble aleatório
+      const randomSlotIdx = emptySlotIndices[Math.floor(Math.random() * emptySlotIndices.length)];
+      const pibbleData = PIBBLER_ROSTER[Math.floor(Math.random() * PIBBLER_ROSTER.length)];
+      const slotEl = document.getElementById(`slot-${randomSlotIdx}`);
+
+      slotEl.classList.add('active');
+      gameState.totalSpawned++;
+
+      // Criar Card Polaroid
+      const card = document.createElement('div');
+      card.className = 'pibble-card awake';
+      card.id = `pibble-${randomSlotIdx}`;
+
+      // SVG Timer Ring
+      const radius = 45;
+      const circumference = 2 * Math.PI * radius;
+
+      card.innerHTML = `
+        <div class="pibble-photo-wrapper">
+          <svg class="timer-ring" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="${radius}" id="ring-${randomSlotIdx}"></circle>
+          </svg>
+          <img class="pibble-photo" src="${pibbleData.awakeImg}" alt="${pibbleData.name} acordado" loading="eager" />
+        </div>
+        <div class="pibble-badge">${pibbleData.name}: ${pibbleData.awakeMsg}</div>
+      `;
+
+      slotEl.appendChild(card);
+      Sound.pop();
+
+      // Animação suave do anel de contagem regressiva
+      const ringCircle = card.querySelector(`#ring-${randomSlotIdx}`);
+      if (ringCircle) {
+        ringCircle.style.strokeDasharray = `${circumference}`;
+        ringCircle.style.strokeDashoffset = '0';
+        // Iniciar animação do tempo
+        requestAnimationFrame(() => {
+          ringCircle.style.transition = `stroke-dashoffset ${GAME_CONFIG.pibbleLifetime}ms linear`;
+          ringCircle.style.strokeDashoffset = `${circumference}`;
+        });
+      }
+
+      // Dados guardados no slot
+      const timeoutId = setTimeout(() => {
+        handlePibbleEscape(randomSlotIdx);
+      }, GAME_CONFIG.pibbleLifetime);
+
+      gameState.slots[randomSlotIdx] = {
+        data: pibbleData,
+        cardElement: card,
+        timeoutId: timeoutId,
+        isSleeping: false
+      };
+
+      // Evento de clique para ninar o pibble
+      card.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        handlePibbleClick(randomSlotIdx);
+      });
+    }
+
+    /* --------------------------------------------------------------------------
+       7. INTERAÇÃO DO CLIQUE (DEFENDA A SONECA!)
+       -------------------------------------------------------------------------- */
+    function handlePibbleClick(slotIdx) {
+      if (!gameState.isPlaying) return;
+      const pibbleSlot = gameState.slots[slotIdx];
+      if (!pibbleSlot || pibbleSlot.isSleeping) return;
+
+      pibbleSlot.isSleeping = true;
+      clearTimeout(pibbleSlot.timeoutId);
+
+      const card = pibbleSlot.cardElement;
+      const pibbleData = pibbleSlot.data;
+
+      // 1. Atualizar Combo e Pontuação
+      gameState.combo++;
+      if (gameState.combo > gameState.maxCombo) {
+        gameState.maxCombo = gameState.combo;
+      }
+      gameState.totalSnoozed++;
+
+      const comboMultiplier = Math.min(3, 1 + Math.floor(gameState.combo / 3) * 0.5);
+      const pointsGained = Math.round(GAME_CONFIG.basePoints * comboMultiplier);
+      gameState.score += pointsGained;
+
+      // Atualizar interface
+      dom.score.textContent = gameState.score;
+      dom.pillScore.classList.add('highlight');
+      setTimeout(() => dom.pillScore.classList.remove('highlight'), 300);
+
+      if (gameState.combo >= 2) {
+        dom.comboBadge.style.display = 'inline-block';
+        dom.comboBadge.textContent = `Combo x${gameState.combo}! 🔥`;
+      }
+
+      // 2. Feedback Visual Instantâneo: Transição para Foto Real Dormindo
+      card.classList.remove('awake');
+      card.classList.add('sleeping');
+
+      const photoImg = card.querySelector('.pibble-photo');
+      photoImg.src = pibbleData.sleepImg;
+      photoImg.alt = `${pibbleData.name} dormindo profundamente`;
+
+      const badge = card.querySelector('.pibble-badge');
+      badge.textContent = `${pibbleData.name}: ${pibbleData.sleepMsg}`;
+
+      // Remover o anel de tempo
+      const ring = card.querySelector('.timer-ring');
+      if (ring) ring.style.opacity = '0';
+
+      // 3. Efeitos Sonoros e Visuais: "Zzz" Flutuando
+      Sound.snooze();
+      triggerFloatingZzz(card);
+      triggerScorePopup(card, `+${pointsGained}`);
+
+      updateStatus(`Aí sim! ${pibbleData.name} adormeceu profundamente! ✨`);
+
+      // Manter a foto dormindo por 650ms antes de liberar a caminha
+      setTimeout(() => {
+        if (card.parentNode) {
+          card.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.85)';
+          setTimeout(() => {
+            if (card.parentNode) card.parentNode.removeChild(card);
+            const slotEl = document.getElementById(`slot-${slotIdx}`);
+            if (slotEl) slotEl.classList.remove('active');
+            gameState.slots[slotIdx] = null;
+          }, 350);
+        }
+      }, 650);
+    }
+
+    /* --------------------------------------------------------------------------
+       8. QUANDO O PIBBLE FOGE (TEMPO ESGOTADO)
+       -------------------------------------------------------------------------- */
+    function handlePibbleEscape(slotIdx) {
+      if (!gameState.isPlaying) return;
+      const pibbleSlot = gameState.slots[slotIdx];
+      if (!pibbleSlot || pibbleSlot.isSleeping) return;
+
+      const card = pibbleSlot.cardElement;
+      const pibbleData = pibbleSlot.data;
+
+      // Resetar combo
+      if (gameState.combo > 0) {
+        gameState.combo = 0;
+        dom.comboBadge.style.display = 'none';
+      }
+
+      Sound.escape();
+      card.classList.add('escaped');
+      updateStatus(`${pibbleData.name} escapou para fazer bagunça! 💨`);
+
+      setTimeout(() => {
+        if (card.parentNode) card.parentNode.removeChild(card);
+        const slotEl = document.getElementById(`slot-${slotIdx}`);
+        if (slotEl) slotEl.classList.remove('active');
+        gameState.slots[slotIdx] = null;
+      }, 400);
+    }
+
+    /* --------------------------------------------------------------------------
+       9. EFEITOS DE ANIMAÇÃO DINÂMICOS ("Zzz" e POPUP DE PONTOS)
+       -------------------------------------------------------------------------- */
+    function triggerFloatingZzz(parentElement) {
+      const symbols = ['Z', 'z', '💤', 'Zzz', '✨'];
+      const rect = parentElement.getBoundingClientRect();
+      const arenaRect = dom.bedGrid.getBoundingClientRect();
+
+      for (let i = 0; i < 3; i++) {
+        const zEl = document.createElement('div');
+        zEl.className = 'floating-zzz';
+        zEl.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        
+        // Posição relativa à arena
+        const startX = (rect.left - arenaRect.left) + rect.width / 2 + (Math.random() * 30 - 15);
+        const startY = (rect.top - arenaRect.top) + rect.height / 3;
+
+        zEl.style.left = `${startX}px`;
+        zEl.style.top = `${startY}px`;
+        zEl.style.fontSize = `${1.2 + Math.random() * 0.8}rem`;
+        zEl.style.animationDelay = `${i * 120}ms`;
+
+        dom.bedGrid.appendChild(zEl);
+        setTimeout(() => {
+          if (zEl.parentNode) zEl.parentNode.removeChild(zEl);
+        }, 1400);
+      }
+    }
+
+    function triggerScorePopup(parentElement, text) {
+      const rect = parentElement.getBoundingClientRect();
+      const arenaRect = dom.bedGrid.getBoundingClientRect();
+
+      const popup = document.createElement('div');
+      popup.className = 'score-popup';
+      popup.textContent = text;
+
+      const posX = (rect.left - arenaRect.left) + rect.width / 2;
+      const posY = (rect.top - arenaRect.top) + rect.height / 2;
+
+      popup.style.left = `${posX}px`;
+      popup.style.top = `${posY}px`;
+
+      dom.bedGrid.appendChild(popup);
+      setTimeout(() => {
+        if (popup.parentNode) popup.parentNode.removeChild(popup);
+      }, 950);
+    }
+
+    function updateStatus(text) {
+      dom.statusText.textContent = text;
+    }
+
+    /* --------------------------------------------------------------------------
+       10. FLUXO DO JOGO: INICIAR, PAUSAR E FIM DE JOGO
+       -------------------------------------------------------------------------- */
+    function startGame() {
+      initAudio();
+
+      // Resetar estado
+      gameState.isPlaying = true;
+      gameState.score = 0;
+      gameState.timeLeft = GAME_CONFIG.totalTime;
+      gameState.combo = 0;
+      gameState.maxCombo = 0;
+      gameState.totalSnoozed = 0;
+      gameState.totalSpawned = 0;
+
+      // Limpar slots existentes
+      gameState.slots.forEach((s, idx) => {
+        if (s) {
+          clearTimeout(s.timeoutId);
+          if (s.cardElement.parentNode) s.cardElement.parentNode.removeChild(s.cardElement);
+          const slotEl = document.getElementById(`slot-${idx}`);
+          if (slotEl) slotEl.classList.remove('active');
+        }
+      });
+      gameState.slots = Array(9).fill(null);
+
+      // Atualizar interface
+      dom.score.textContent = '0';
+      dom.timer.textContent = `${gameState.timeLeft}s`;
+      dom.timer.classList.remove('danger');
+      dom.comboBadge.style.display = 'none';
+      dom.btnText.textContent = 'Em Andamento...';
+      dom.btnIcon.textContent = '🐾';
+      dom.btnStart.disabled = true;
+      dom.btnStart.style.opacity = '0.7';
+
+      dom.modalOverlay.classList.remove('visible');
+      updateStatus("O festival começou! Clique nos pibbles agitados para fazê-los dormir!");
+
+      // Iniciar Cronômetro
+      clearInterval(gameState.timerInterval);
+      gameState.timerInterval = setInterval(() => {
+        gameState.timeLeft--;
+        dom.timer.textContent = `${gameState.timeLeft}s`;
+
+        if (gameState.timeLeft <= 8) {
+          dom.timer.classList.add('danger');
+        }
+
+        if (gameState.timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+
+      // Iniciar Spawns
+      clearTimeout(gameState.spawnTimeout);
+      scheduleNextSpawn();
+      // Primeiro spawn imediato
+      setTimeout(spawnPibble, 200);
+    }
+
+    function endGame() {
+      gameState.isPlaying = false;
+      clearInterval(gameState.timerInterval);
+      clearTimeout(gameState.spawnTimeout);
+
+      // Limpar timeouts ativos de pibbles
+      gameState.slots.forEach(s => {
+        if (s) clearTimeout(s.timeoutId);
+      });
+
+      dom.timer.textContent = '0s';
+      dom.timer.classList.remove('danger');
+      dom.btnStart.disabled = false;
+      dom.btnStart.style.opacity = '1';
+      dom.btnText.textContent = 'Iniciar Soneca!';
+      dom.btnIcon.textContent = '▶';
+
+      // Atualizar Recorde
+      if (gameState.score > gameState.bestScore) {
+        gameState.bestScore = gameState.score;
+        localStorage.setItem('pibble_best_score', gameState.bestScore);
+        dom.best.textContent = gameState.bestScore;
+      }
+
+      Sound.gameOver();
+      showGameOverModal();
+    }
+
+    function showGameOverModal() {
+      dom.modalFinalScore.textContent = gameState.score;
+      dom.modalSnoozeCount.textContent = gameState.totalSnoozed;
+      dom.modalMaxCombo.textContent = `x${gameState.maxCombo || 1}`;
+
+      const accuracy = gameState.totalSpawned > 0 
+        ? Math.round((gameState.totalSnoozed / gameState.totalSpawned) * 100) 
+        : 100;
+      dom.modalAccuracy.textContent = `${accuracy}%`;
+
+      // Definir Ranks e Troféus
+      let rank = "";
+      let icon = "🐾";
+
+      if (gameState.score >= 2200) {
+        rank = "Lorde Supremo dos Sonhos Caninos ✨👑";
+        icon = "👑";
+      } else if (gameState.score >= 1500) {
+        rank = "Mestre da Soneca Perfeita 🌸💤";
+        icon = "🏆";
+      } else if (gameState.score >= 900) {
+        rank = "Guardião da Paz no Sofá 🛋️✨";
+        icon = "⭐";
+      } else {
+        rank = "Iniciante dos Cochilos Fofos 🐾";
+        icon = "🐶";
+      }
+
+      dom.modalRank.textContent = rank;
+      dom.modalTrophy.textContent = icon;
+      dom.modalOverlay.classList.add('visible');
+    }
+
+    /* --------------------------------------------------------------------------
+       11. EVENTOS DE INTERFACE E CONTROLES
+       -------------------------------------------------------------------------- */
+    dom.btnStart.addEventListener('click', () => {
+      if (!gameState.isPlaying) {
+        startGame();
+      }
+    });
+
+    dom.btnRestart.addEventListener('click', () => {
+      dom.modalOverlay.classList.remove('visible');
+      startGame();
+    });
+
+    dom.btnShare.addEventListener('click', () => {
+      const shareText = `🐾 Fiz ${gameState.score} Pontos Zzz no "Festival do Pibble Dorminhoco"! Botei ${gameState.totalSnoozed} buldogues para dormir! 💤 Venha defender a soneca você também!`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareText).then(() => {
+          dom.btnShare.textContent = "✅ Copiado com Sucesso!";
+          setTimeout(() => dom.btnShare.textContent = "📋 Copiar Conquista", 2000);
+        });
+      } else {
+        alert(shareText);
+      }
+    });
+
+    // Alternar Som
+    dom.btnSound.addEventListener('click', () => {
+      initAudio();
+      soundEnabled = !soundEnabled;
+      dom.soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+      dom.btnSound.title = soundEnabled ? 'Som Ativado' : 'Som Mudo';
+    });
+
+    // Fechar modal ao clicar fora da caixinha (opcional)
+    dom.modalOverlay.addEventListener('click', (e) => {
+      if (e.target === dom.modalOverlay) {
+        // não fecha obrigatoriamente para manter foco
+      }
+    });
+  </script>
+</body>
+</html>
